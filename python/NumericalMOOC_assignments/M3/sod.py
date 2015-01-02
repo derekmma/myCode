@@ -54,9 +54,9 @@ rho = u1
 x = numpy.linspace(-10,10,nx)
 
 print "The parameters at x = 2.5 m are:\n"
-print "1. Pressure = " , p[50] , "$N/m^2$\n"
-print "2. Velocity = " , u[50] , "$m/s^2$\n"
-print "3. Density = " , rho[50] , "$kg/m^3$\n"
+print "1. Pressure = " , p[50] , "N/m^2\n"
+print "2. Velocity = " , u[50] , "m/s^2\n"
+print "3. Density = " , rho[50] , "kg/m^3\n"
 
 fig = pyplot.figure()
 ax1 = fig.add_subplot(1,3,1)
