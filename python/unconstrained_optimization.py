@@ -108,7 +108,7 @@ def sDescent(f,x0,X):
 
 def conjugateGradient(f,x0,X):
     """
-    Description : Returns the minimizer using the Conjugate Gradient Algorithm
+    Description : Returns the minimizer using the Conjugate Gradient Algorithm (as a Direct Method)
     
     Parameters:
                1. f   : symbolic representation of the function to be minimized
