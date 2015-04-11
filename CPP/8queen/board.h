@@ -8,7 +8,7 @@ using namespace std;
 class Board
 {
  private:
-    Queen *queenNo,*basePtr;
+    Queen *queenNo;
  public: 
     Board();
     ~Board();

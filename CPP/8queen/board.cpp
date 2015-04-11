@@ -6,15 +6,12 @@ Board::Board()
 {
  int i;
  this->queenNo = new Queen[maxQueens];
- this->basePtr = this->queenNo;
- for (i=0;i<maxQueens;i++,queenNo++)
+ for (i=0;i<maxQueens;i++)
  {
-  (this->queenNo)->setRow(i);
-  (this->queenNo)->setColumn(-1);
+  ( this->queenNo + i )->setRow(i);
+  ( this->queenNo + i )->setColumn(-1);
  }
- this->queenNo = this->basePtr;
  (this->queenNo)->setColumn(0);
- (this->queenNo)++;
 }
 
 Board::~Board(){}
@@ -66,9 +63,6 @@ void Board::printBoard()
  checkBoard(queenNo);
  int i;
  cout<<"\nOne of the Final Configurations of the 8 Queens Problem is:\n";
- queenNo = basePtr;
- for(i=0;i<maxQueens;i++,queenNo++)
- {
-  cout<<"Row = " << queenNo->getRow() <<" Col = "<<queenNo->getColumn()<<endl;
- }
+ for(i=0;i<maxQueens;i++)
+  cout<<"Row = " << (queenNo+i)->getRow() + 1 <<" Col = "<<(queenNo+i)->getColumn() + 1 <<endl;
 }
