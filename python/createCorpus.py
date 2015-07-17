@@ -20,9 +20,15 @@ def StemmedCorpus(ip,index,columns):
     """
     stemmed_ip = DataFrame(index=index,columns=columns)
     stemmer = PorterStemmer()
+    colCount=1
+    temp = ""
     for j in columns:
+        if (colCount == 1): temp = "q"
+        if (colCount == 3): temp = "z"
+        if (colCount == 3): temp = ""
+        colCount+=1
         for i in index:
-            s = (" ").join([z for z in BeautifulSoup(ip[j][i]).get_text(" ").split(" ")])
+            s = (" ").join([temp + z for z in BeautifulSoup(ip[j][i]).get_text(" ").split(" ")])
             s = (" ").join([stemmer.stem(z) for z in s.split(" ")])
             s = re.sub("[^a-zA-Z0-9]"," ", s)
             stemmed_ip[j][i] = s
