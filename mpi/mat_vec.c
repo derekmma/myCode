@@ -11,13 +11,10 @@ int main( int argc , char* argv[] ) {
  int i , j ;
  int *row_count , *sendcounts , *displs;
  int row , col , vec_size , size_flag , proc_flag;
- sendcounts = ( int* ) calloc( np , sizeof( int ) );
- displs = (int*) calloc( np , sizeof( int ) );
  row = col = vec_size = size_flag = proc_flag = 0;
 
  /* Read dimensions of input matrix and vector */
  if(rank == 0) {
-  int k;
   FILE *fp;
   char c;
   fp = fopen( argv[1], "r" ); /* compute matrix dimensions */
@@ -25,7 +22,6 @@ int main( int argc , char* argv[] ) {
    if( c == ' ' && row == 0 ) col++;
    if( c == '\n' ) row++; }
   col++;
-  /* close file */
   fclose( fp );
 
   fp = fopen( argv[2] , "r" ); /* compute vector dimensions */
@@ -52,7 +48,6 @@ int main( int argc , char* argv[] ) {
  MPI_Bcast( &proc_flag , 1 , MPI_INT , 0 , MPI_COMM_WORLD);
 
  if ( (size_flag != 0) || (proc_flag != 0) ) {
- free(sendcounts); free(displs);
  MPI_Finalize();
  return 0 ; } /* Exit if checks fail */
 
@@ -65,7 +60,6 @@ int main( int argc , char* argv[] ) {
  double y[row];
  
  if (rank == 0 ) {
-  int i , j , k ;
   FILE *fp;
   fp = fopen(argv[1] , "r" );   /* Read input matrix */
   while( !feof( fp ) ) {
@@ -83,34 +77,30 @@ int main( int argc , char* argv[] ) {
   row_count = (int*) calloc( np , sizeof( int ) );
   int count = 0;
   while(1) {
-   for ( k = 0 ; k < np ; k++) {
-    *( row_count + k ) += 1;
+   for ( i = 0 ; i < np ; i++) {
+    *( row_count + i ) += 1;
     count++;
    if ( count == row ) break; }
    if ( count == row ) break; }
   
+  sendcounts = ( int* ) calloc( np , sizeof( int ) );
+  displs = (int*) calloc( np , sizeof( int ) );
+  
   /* Calculate sendcounts and dispacement arrays needed for MPI_Scatterv */
-  for ( k = 0 ; k < np ; k++ ) *( sendcounts + k ) = *( row_count + k ) * col ;
-  for ( k = 1 ; k < np ; k++ ) *( displs + k ) = *( sendcounts + k - 1) + *( displs + k - 1 )  ; }
-
+  for ( i = 0 ; i < np ; i++ ) *( sendcounts + i ) = *( row_count + i ) * col ;
+  for ( i = 1 ; i < np ; i++ ) *( displs + i ) = *( sendcounts + i - 1) + *( displs + i - 1 )  ; }
  int proc_row;  
  MPI_Scatter( row_count , 1 , MPI_INT , &proc_row , 1 , MPI_INT , 0 , MPI_COMM_WORLD );
- double data[ row ][ col ];
- double procMul[row];
- MPI_Bcast( sendcounts , np , MPI_INT , 0 ,  MPI_COMM_WORLD );
- MPI_Bcast( displs , np , MPI_INT , 0 , MPI_COMM_WORLD );
+ double data[ proc_row ][ col ];
+ double procMul[proc_row];
 
- MPI_Scatterv( A , sendcounts , displs , MPI_DOUBLE , &data , sendcounts[rank] , MPI_DOUBLE , 0 , MPI_COMM_WORLD);
+ MPI_Scatterv( A , sendcounts , displs , MPI_DOUBLE , &data , proc_row * col , MPI_DOUBLE , 0 , MPI_COMM_WORLD);
  MPI_Bcast( x , vec_size , MPI_DOUBLE , 0 , MPI_COMM_WORLD );
 
  /* Recalculate sendcounts (recvcounts) and displs for MPI_Gatherv */
- if ( rank == 0 ) {
-  for ( i = 0 ; i < np ; i++ ) *( sendcounts + i ) = *( row_count + i ) ;
-  for ( i = 0 ; i < np ; i++ ) *( displs + i ) = 0;
-  for ( i = 1 ; i < np ; i++ ) *( displs + i ) = *( sendcounts + i - 1) + *( displs + i - 1 )  ; }
+ if ( rank == 0 ) 
+  for ( i = 1 ; i < np ; i++ ) *( displs + i ) = *( row_count + i - 1) + *( displs + i - 1 )  ; 
 
- MPI_Bcast( sendcounts , np , MPI_INT , 0 ,  MPI_COMM_WORLD );
- MPI_Bcast( displs , np , MPI_INT , 0 , MPI_COMM_WORLD );
 
  /* Perform Matrix Vector Multiplication */
  for( i = 0 ; i < proc_row ; i++ ) {
@@ -118,15 +108,14 @@ int main( int argc , char* argv[] ) {
   for ( j = 0; j < col ; j++ )
    procMul[i] += data[i][j]*x[j]; } 
  
- MPI_Gatherv( procMul , proc_row , MPI_DOUBLE , y , sendcounts, displs , MPI_DOUBLE, 0 , MPI_COMM_WORLD  );
+ MPI_Gatherv( procMul , proc_row , MPI_DOUBLE , y , row_count , displs , MPI_DOUBLE, 0 , MPI_COMM_WORLD  );
 
  if (rank == 0) {
   printf("\nA(%dx%d) x(%dx1) = \n",row,vec_size,vec_size);
   for(i=0;i<row;i++) printf("%lf ",y[i]);
   printf("\n\n"); }
   
- free(sendcounts); free(displs);
- if (rank == 0 ) free(row_count); 
+ if (rank == 0 ) { free(row_count); free(sendcounts); free(displs); }
  MPI_Finalize();
  return 0;
 }
