@@ -75,14 +75,11 @@ int main( int argc , char* argv[] ) {
 
   /* Calculate number of rows each process is going to receive */
   row_count = (int*) calloc( np , sizeof( int ) );
-  int count = 0;
-  while(1) {
-   for ( i = 0 ; i < np ; i++) {
-    *( row_count + i ) += 1;
-    count++;
-   if ( count == row ) break; }
-   if ( count == row ) break; }
-  
+  int div = ( float ) row / np ;
+  int rem = row % np ;
+  for ( i = 0 ; i < np ; i++) *( row_count + i ) += div;
+  for ( i = 0 ; i < rem ; i++) *( row_count + i ) += 1;
+
   sendcounts = ( int* ) calloc( np , sizeof( int ) );
   displs = (int*) calloc( np , sizeof( int ) );
   
