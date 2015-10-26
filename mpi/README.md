@@ -10,3 +10,11 @@ The codes were written using MPI
                  required to be stored as a row vector following the same
                  convention as for the matrix. )
 
+2. canon.c   : Matrix-Matrix Multiplication using Canon's Algorithm.
+               ( The two matrices are supplied as seperate files via
+                 command line arguments. The same file formatting
+                 conventions are expected to be followed as in the mat_vec
+                 code. Additionally,the algorithm requires the two matrices
+                 to be square, of the same dimensions and the number of
+                 processes to be  n^2 where n is the order of the square
+                 matrices.)
