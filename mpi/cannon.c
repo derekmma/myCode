@@ -92,7 +92,7 @@ int main(int argc , char* argv[] ) {
      coords[2];
  
  MPI_Cart_create( MPI_COMM_WORLD , 2 , dims , periods , 1 , &cartcomm );
- MPI_Cart_coords(cartcomm , rank , 2 , coords);  MPI_Cart_coords(cartcomm, rank, 2, coords);
+ MPI_Cart_coords(cartcomm , rank , 2 , coords);
 
  /* Transfer data among procs to get Initial Cannon Configuration */
 
@@ -102,7 +102,7 @@ int main(int argc , char* argv[] ) {
  double temp , procMul = 0;
 
  MPI_Cart_shift( cartcomm , 1 , (int) rank / row , &sourceX , &destX);
- MPI_Cart_shift( cartcomm , 0 , (rank+row) % row , &sourceY , &destY);
+ MPI_Cart_shift( cartcomm , 0 , rank % row , &sourceY , &destY);
 
  if ( rank >= row ) {
  MPI_Send( &a , 1, MPI_DOUBLE , sourceX , 1 , MPI_COMM_WORLD );
