@@ -18,3 +18,13 @@ The codes were written using MPI
                  to be square, of the same dimensions and the number of
                  processes to be  n^2 where n is the order of the square
                  matrices.)
+
+3. parJacobi : Solution of a System of Linear Equations using Jacobi's 
+               Method
+               ( The system of linear equations Ax = b, along with the 
+                 initial guess is supplied as a seperate file via command
+                 arguments. The file is required to follow the same
+                 conventions laid out above. The columns b and the initial
+                 guess values are augumented to the coefficient matrix A.
+                 Thus the input file is required to be specified as 
+                 A|b|guess. )
