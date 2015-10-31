@@ -5,7 +5,7 @@
 
 #define epsilon 1E-5
 
-double* jacobi(int it , int rank , int nrow , int col , int* row_count, double* initGuess , double* b, double A[][col] ) {
+double* jacobi(int rank , int col , int* row_count, double* initGuess , double* b, double A[][col] ) {
 
  int start , end , diag , i , j;
  double temp;
@@ -17,7 +17,7 @@ double* jacobi(int it , int rank , int nrow , int col , int* row_count, double* 
  else {
   for( i = rank - 1 ; i >= 0 ; i-- ) start += row_count[ i ];
   end = start + row_count[ rank ] - 1; }
- double* x = ( double* ) calloc( nrow , sizeof( double ) );
+ double* x = ( double* ) calloc( row_count[ rank ] , sizeof( double ) );
 
 
   for( i = 0, diag = start ; diag <= end ; diag++ , i++ ) {
@@ -128,7 +128,7 @@ int main(int argc , char* argv[]) {
 
   MPI_Bcast( init_guess , row , MPI_DOUBLE , 0 , MPI_COMM_WORLD );
   
-  xNew = jacobi( iteration , rank , row_count[ rank ] , col , row_count , init_guess , b , data );
+  xNew = jacobi( rank , col , row_count , init_guess , b , data );
   MPI_Allgatherv( xNew , row_count[ rank ] , MPI_DOUBLE , recvbuf , row_count , displsB , MPI_DOUBLE , MPI_COMM_WORLD ); 
  
   free(xNew);
