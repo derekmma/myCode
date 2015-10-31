@@ -11,9 +11,7 @@ double* jacobi(int rank , int col , int* row_count, double* initGuess , double* 
  double temp;
  start = 0;
 
- if ( rank == 0 ) {
-  start = 0;
-  end = row_count[ rank ] - 1 ; }
+ if ( rank == 0 )  end = row_count[ rank ] - 1 ; 
  else {
   for( i = rank - 1 ; i >= 0 ; i-- ) start += row_count[ i ];
   end = start + row_count[ rank ] - 1; }
